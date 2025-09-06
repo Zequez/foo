@@ -6,6 +6,8 @@
   import ConfigurableSeparator from './ConfigurableSeparator.svelte'
   import Markdown from './section-components/Markdown.svelte'
   import Team from './section-components/Team.svelte'
+  import BrushStrokeWave from './svg-separators/brush-stroke-wave.svelte'
+  import WhatsappIcon from '~icons/fa6-brands/whatsapp'
 
   const { config }: { config: WebConfig } = $props()
   // const defaultConfig from './default-config.ts'
@@ -115,7 +117,7 @@
           },
         )}
       ></div>
-      <!-- <div class={cx('h12 absolute z-8 w-full top-0 bg-white/10')}></div> -->
+      <div class={cx('h12 absolute z-8 w-full top-0 bg-black/10')}></div>
       <div
         class={cx(navBarBaseClass, navBarShrinkStrategies[0])}
         bind:this={navBarShrinkTarget}
@@ -153,7 +155,7 @@
   <!-- #### HEADER #### -->
   <!-- ################ -->
 
-  <div class={cx('relative flexcc px2 py12')}>
+  <div class={cx('relative flexcc px2 pt4 sm:pt16 pb28')}>
     <h1
       class={cx('rounded-[30px] relative z-9 p2', {
         'bg-white/10 backdrop-blur-sm': config.header.bgImg,
@@ -180,6 +182,23 @@
     {/if}
   </div>
 
+  <!-- #### FLOATING BUTTONS #### -->
+  <!-- ########################## -->
+
+  {#if config.floatingIcons.whatsapp}
+    <a
+      href={`https://wa.me/${config.floatingIcons.whatsapp}`}
+      class={`
+        fixed right-2 bottom-14 z-999
+        sm:bottom-2 rounded-md h10 w10
+        flexcc
+        bg-green-500 hover:brightness-115 text-white text-2xl
+      `}
+    >
+      <WhatsappIcon />
+    </a>
+  {/if}
+
   <!-- #### SECTIONS #### -->
   <!-- ################## -->
 
@@ -190,19 +209,30 @@
   /> -->
 
   {#each config.sections as section, i (section.title)}
-    <div id={section.id}>
+    <div
+      id={section.id}
+      class={cx({
+        'bg-main-400': i % 2 === 1,
+        'bg-main-500': i % 2 === 0,
+      })}
+    >
+      <BrushStrokeWave
+        class={cx('rotate-180 relative w-full h16 -mt16 text-main-400', {
+          'text-main-400': i % 2 === 1,
+          'text-main-500': i % 2 === 0,
+        })}
+      />
       <div
         class={cx(
-          'h40px b-y-5 b-main-900 uppercase text-serif text-white font-serif tracking-widest text-2xl py8 font-thin flexcs',
-          { 'bg-main-400': i % 2 === 0, 'bg-main-300': i % 2 === 1 },
+          'h40px py8 flexcs',
+          'text-white font-serif tracking-wider font-thin text-2xl uppercase',
         )}
       >
-        <!-- style={`background-image: url(${pattern});`} -->
         <div class={cx(config.css.width, 'mx-auto w-full px4')}>
           {section.title}
         </div>
       </div>
-      <div class={cx(config.css.width, 'mx-auto py4 px4 md')}>
+      <div class={cx(config.css.width, 'mx-auto py4 px4 pb20')}>
         {#each section.components as compConfig, i (i)}
           {#if compConfig.type === 'Markdown'}
             <Markdown config={compConfig} />

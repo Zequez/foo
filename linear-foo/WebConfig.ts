@@ -45,4 +45,5 @@ type Section = {
   components: SectionComponent[]
   id: string
   showOnNavigation: boolean
+  hideSeparator: boolean
 }

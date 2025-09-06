@@ -11,4 +11,6 @@
   const { config }: { config: Config } = $props()
 </script>
 
-<Markdown content={config.content} />
+<div class="md">
+  <Markdown content={config.content} />
+</div>
