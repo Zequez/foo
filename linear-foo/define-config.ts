@@ -37,21 +37,21 @@ const DEFAULT: WebConfig = {
     titleImg: '',
     title: undefined,
     css: {
-      container: 'h500px',
+      img: 'max-h-300px',
     },
   },
   sections: [
     {
       title: 'First',
-      content: 'Lorem ipsum dolor sit amet',
       id: 'first',
       showOnNavigation: true,
+      components: [{ type: 'Markdown', content: 'Lorem ipsum dolor sit amet' }],
     },
     {
       title: 'Second',
-      content: 'Lorem ipsum dolor sit amet',
       id: 'second',
       showOnNavigation: true,
+      components: [],
     },
   ],
 }

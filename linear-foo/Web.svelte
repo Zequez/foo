@@ -4,7 +4,8 @@
   import { cssVariables, cx } from '@/center/utils'
   import { type WebConfig } from './WebConfig'
   import ConfigurableSeparator from './ConfigurableSeparator.svelte'
-  import { Markdown } from 'svelte-rune-markdown'
+  import Markdown from './section-components/Markdown.svelte'
+  import Team from './section-components/Team.svelte'
 
   const { config }: { config: WebConfig } = $props()
   // const defaultConfig from './default-config.ts'
@@ -14,6 +15,42 @@
   let active = $state(config.sections[0]?.id)
 
   let SeparatorIcon = $derived(config.nav.separator)
+
+  let navShrink = $state({
+    removeSeparators: false,
+    decreaseTextSize: false,
+    minimizeSpacing: false,
+  })
+
+  let navBarShrinkTarget: HTMLDivElement = $state(null!)
+  const navBarBaseClass = 'w-full h-full overflow-hidden'
+  const navBarShrinkStrategies = [
+    'flexcc tracking-wider space-x-4',
+    'flexcc tracking-wider space-x-4 no-separator',
+    'flexcc tracking-wider space-x-1 no-separator',
+    'flexcc tracking-wider space-x-1 no-separator text-sm',
+    'flexcc tracking-tight space-x-1 no-separator text-sm',
+    'flexcs tracking-tight space-x-1 no-separator text-sm overflow-x-auto!',
+  ]
+
+  let prevScreenWidth = window.innerWidth
+  function handleWidthChange() {
+    const newScreenWidth = window.innerWidth
+
+    if (prevScreenWidth === newScreenWidth) return
+
+    for (let klass of navBarShrinkStrategies) {
+      navBarShrinkTarget.setAttribute('class', `${navBarBaseClass} ${klass}`)
+      const w = navBarShrinkTarget.offsetWidth
+      const scrollW = navBarShrinkTarget.scrollWidth
+
+      if (scrollW <= w) {
+        break
+      }
+    }
+
+    prevScreenWidth = newScreenWidth
+  }
 </script>
 
 <svelte:head>
@@ -38,6 +75,9 @@
       stickyNav = true
     }
   }}
+  onresize={() => {
+    handleWidthChange()
+  }}
 />
 
 <svelte:body
@@ -59,7 +99,9 @@
   {#if config.nav.show}
     <div
       class={cx(
-        'transition-[background-color,box-shadow] transition-duration-500 fixed left-0 w-full z-100 h12 flexcc text-white font-serif tracking-wider text-shadow-[0_1px_0_#0006] space-x-4',
+        'fixed z-100 h12 left-0 w-full',
+        'transition-[background-color,box-shadow] transition-duration-500',
+        'text-white font-serif text-shadow-[0_1px_0_#0006]',
         'bottom-0 sm:top-0',
       )}
     >
@@ -74,55 +116,59 @@
         )}
       ></div>
       <!-- <div class={cx('h12 absolute z-8 w-full top-0 bg-white/10')}></div> -->
-      {#each config.sections as section, i (section.title)}
-        <a
-          href="#{section.id}"
-          class="uppercase font-bold h-full group flexcc relative z-10"
-        >
-          <span
-            class={cx(
-              'px2 py1 rounded-lg group-hover:(bg-white/20 transition-duration-0) transition-colors transition-duration-500',
-              {
-                'bg-alt-500! text-main-200 text-shadow-none shadow-[0_1px_0_0.5px] shadow-black/40':
-                  active === section.id,
-              },
-            )}
+      <div
+        class={cx(navBarBaseClass, navBarShrinkStrategies[0])}
+        bind:this={navBarShrinkTarget}
+      >
+        {#each config.sections as section, i (section.title)}
+          <a
+            href="#{section.id}"
+            class="uppercase font-bold h-full group flexcc relative z-10"
           >
-            {section.title}
-          </span>
-        </a>
-        {#if i < config.sections.length - 1}
-          <SeparatorIcon
-            class={cx(
-              'text-[9px] relative z-10 text-main-950 hidden sm:block',
-              config.nav.css.separator,
-            )}
-          />
-        {/if}
-      {/each}
+            <span
+              class={cx(
+                'px2 py1 rounded-lg group-hover:(bg-white/20 transition-duration-0) transition-colors transition-duration-500',
+                {
+                  'bg-alt-500! text-main-200 text-shadow-none shadow-[0_1px_0_0.5px] shadow-black/40':
+                    active === section.id,
+                },
+              )}
+            >
+              {section.title}
+            </span>
+          </a>
+          {#if i < config.sections.length - 1}
+            <SeparatorIcon
+              class={cx(
+                'separator text-[9px] flex-shrink-0 relative z-10 text-main-950 block [group-no-separator]:hidden',
+                config.nav.css.separator,
+              )}
+            />
+          {/if}
+        {/each}
+      </div>
     </div>
   {/if}
 
   <!-- #### HEADER #### -->
   <!-- ################ -->
 
-  <div class={cx('relative', config.header.css.container)}>
-    <div class="max-w-3xl mx-auto h-full flexcc">
-      <h1
-        class={cx('rounded-[30px] relative z-9', {
-          'bg-white/10 backdrop-blur-sm': config.header.bgImg,
-          'backdrop-blur-none!': optimizedVisuals,
-        })}
-      >
-        <img
-          src={config.header.titleImg}
-          alt={config.title}
-          class="max-w-100 text-8xl text-white font-serif text-center"
-          width="500"
-          height="333"
-        />
-      </h1>
-    </div>
+  <div class={cx('relative flexcc px2 py12')}>
+    <h1
+      class={cx('rounded-[30px] relative z-9 p2', {
+        'bg-white/10 backdrop-blur-sm': config.header.bgImg,
+        'backdrop-blur-none!': optimizedVisuals,
+      })}
+    >
+      <img
+        src={config.header.titleImg}
+        alt={config.title}
+        class={cx(
+          'max-w-full text-8xl text-white font-serif text-center',
+          config.header.css.img,
+        )}
+      />
+    </h1>
     {#if config.header.bgImg}
       <div class="absolute inset-0 overflow-hidden">
         <img
@@ -157,14 +203,26 @@
         </div>
       </div>
       <div class={cx(config.css.width, 'mx-auto py4 px4 md')}>
-        <Markdown content={section.content} />
+        {#each section.components as compConfig, i (i)}
+          {#if compConfig.type === 'Markdown'}
+            <Markdown config={compConfig} />
+          {:else if compConfig.type === 'Team'}
+            <Team config={compConfig} />
+          {/if}
+        {/each}
       </div>
     </div>
   {/each}
 </div>
 
-<style global>
+<style>
   :root {
     --font-serif: 'Epunda Slab', serif;
+  }
+
+  :global {
+    .no-separator .separator {
+      display: none !important;
+    }
   }
 </style>

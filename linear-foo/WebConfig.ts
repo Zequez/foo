@@ -1,4 +1,6 @@
 import type { Component } from 'svelte'
+import { type Config as TeamConfig } from './section-components/Team.svelte'
+import { type Config as MarkdownConfig } from './section-components/Markdown.svelte'
 
 export type WebConfig = {
   title: string
@@ -30,15 +32,17 @@ export type WebConfig = {
     titleImg: string
     title?: string | undefined
     css: {
-      container: string
+      img: string
     }
   }
   sections: Section[]
 }
 
+export type SectionComponent = TeamConfig | MarkdownConfig
+
 type Section = {
   title: string
-  content: string
+  components: SectionComponent[]
   id: string
   showOnNavigation: boolean
 }

@@ -28,40 +28,40 @@ export default defineConfig({
   header: {
     bgImg: titleBg,
     titleImg: title,
-    css: {
-      container: 'h400px',
-    },
+    // css: {
+    //   container: 'h400px',
+    // },
   },
   sections: [
     {
       title: 'Equipo',
       id: 'equipo',
       showOnNavigation: true,
-      content: 'Equipo!',
+      components: [{ type: 'Markdown', content: 'Equipo!' }],
     },
     {
       title: 'Lugar',
       id: 'donde',
       showOnNavigation: true,
-      content: 'EL LUGAR!',
+      components: [{ type: 'Markdown', content: 'EL LUGAR!' }],
     },
     {
       title: 'Servicios',
       id: 'servicios',
       showOnNavigation: true,
-      content: 'Los servicios!',
+      components: [{ type: 'Markdown', content: 'Los servicios!' }],
     },
     {
       title: 'Trabajos',
       id: 'trabajos',
       showOnNavigation: true,
-      content: 'TRABAJOS!',
+      components: [{ type: 'Markdown', content: 'TRABAJOS!' }],
     },
     {
       title: 'Contacto',
       id: 'contacto',
       showOnNavigation: true,
-      content: 'Contacto!',
+      components: [{ type: 'Markdown', content: 'Contacto!' }],
     },
   ],
 })
