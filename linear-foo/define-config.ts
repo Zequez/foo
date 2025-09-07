@@ -45,17 +45,18 @@ const DEFAULT: WebConfig = {
       title: 'First',
       id: 'first',
       showOnNavigation: true,
-      hideSeparator: false,
+      separator: null,
       components: [{ type: 'Markdown', content: 'Lorem ipsum dolor sit amet' }],
     },
     {
       title: 'Second',
       id: 'second',
       showOnNavigation: true,
-      hideSeparator: false,
+      separator: null,
       components: [],
     },
   ],
+  separators: [],
 }
 
 export default function defineConfig(

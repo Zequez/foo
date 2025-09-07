@@ -36,14 +36,31 @@ export type WebConfig = {
     }
   }
   sections: Section[]
+  separators: SeparatorConfig[]
 }
 
 export type SectionComponent = TeamConfig | MarkdownConfig
+
+export type SeparatorConfig = {
+  id: string
+  reverse?: boolean
+  dragInOffset?: number
+  cavityOffset?: number
+  flip?: boolean
+  viewboxShift?: [number, number, number, number]
+} | null
 
 type Section = {
   title: string
   components: SectionComponent[]
   id: string
   showOnNavigation: boolean
-  hideSeparator: boolean
+  separator: {
+    id: string
+    reverse?: boolean
+    dragInOffset?: number
+    cavityOffset?: number
+    flip?: boolean
+    viewboxShift?: [number, number, number, number]
+  } | null
 }
