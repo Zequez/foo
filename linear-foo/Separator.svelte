@@ -1,19 +1,28 @@
 <script lang="ts">
+  import { cx } from '@/center/utils'
+  import type { SeparatorConfig } from './WebConfig'
+
   const separators = import.meta.glob('./separators/*.svg', {
     eager: true,
     as: 'raw',
   }) as { [key: string]: string }
 
-  type SeparatorConfig = {
-    id: string
-    reverse?: boolean
-    flip?: boolean
-    dragInOffset?: number
-    cavityOffset?: number
-    viewboxShift?: [number, number, number, number]
-  }
+  const {
+    config,
+    index,
+  }: {
+    config: Exclude<SeparatorConfig, null>
+    index: number
+  } = $props()
 
-  const { config }: { config: SeparatorConfig } = $props()
+  let isOn = $derived(config.snapTo === 'next' ? 'bottom' : 'top')
+  let reverse = $derived(config.snapTo === 'next')
+  let snappedSectionIndex = $derived(
+    index + (config.snapTo === 'prev' ? -1 : 0),
+  )
+  let color = $derived(
+    snappedSectionIndex % 2 === 1 ? 'text-main-400' : 'text-main-500',
+  )
 
   const svg = $derived.by(() => {
     if (!separators[`./separators/${config.id}.svg`]) {
@@ -55,8 +64,8 @@
     )
   })
 
-  let dragInOffset = $derived(config.dragInOffset || 0)
-  let reverse = $derived(config.reverse != null ? config.reverse : false)
+  let marginOuter = $derived(config.marginOuter || 0)
+  let marginInner = $derived(config.marginInner || 0)
   let flip = $derived(config.flip != null ? config.flip : false)
 
   const viewBoxSize = $derived({
@@ -64,33 +73,47 @@
     h: shiftedViewbox[3],
   })
 
-  const cavityOffset = $derived.by(() => {
-    if (config.cavityOffset != null) return config.cavityOffset
-    if (!svg) return null
-    const m = svg.match(/data\-offset="(\d+)"/)
-    if (!m) return 0
-    return parseInt(m[1]) / 100
-  })
+  // const cavityOffset = $derived.by(() => {
+  //   if (!svg) return null
+  //   const m = svg.match(/data\-offset="(\d+)"/)
+  //   if (!m) return 0
+  //   return parseInt(m[1]) / 100
+  // })
 
-  const paddingTop = $derived(
-    (((1 - cavityOffset!) * viewBoxSize!.h) / viewBoxSize!.w) * 100,
-  )
-
-  console.log('ars')
+  const paddifiedHeight = $derived((viewBoxSize!.h / viewBoxSize!.w) * 100)
 </script>
 
-{#if svg && viewBoxSize && cavityOffset != null}
-  <div class="w-full relative b-yellow z-10">
+{#if svg && viewBoxSize}
+  <div
+    class={cx('w-full relative b-yellow z-10', color, {
+      'scale-y-[-1]': config.snapTo === 'next',
+      'scale-x-[-1]': config.flip,
+    })}
+  >
+    {#if marginInner > 0}
+      <div
+        class="w-full bg-current"
+        style="padding-top: {paddifiedHeight * marginInner + 0.3}%; "
+      ></div>
+    {/if}
+    <!-- style={`transform: translateY(${reverse ? (1 - marginInner) * marginOuter * 100 : -marginInner! * 100}%) ${reverse ? 'scaleY(-1)' : 'scaleY(1)'} ${flip ? 'scaleX(-1)' : 'scaleX(1)'}`} -->
     <div
-      class="absolute w-full"
-      style={`transform: translateY(${config.reverse ? -(1 - cavityOffset) * dragInOffset * 100 : -cavityOffset! * 100}%) ${reverse ? 'scaleY(-1)' : 'scaleY(1)'} ${flip ? 'scaleX(-1)' : 'scaleX(1)'}`}
+      class="absolute top-0 w-full"
+      style={`transform: translateY(${marginInner * 100}%)`}
     >
       {@html adjustedSvg}
     </div>
     <div
-      class="w-full"
-      style="padding-top: {paddingTop * (1 - dragInOffset)}%;"
+      class="w-full b-cyan"
+      style="padding-top: {paddifiedHeight *
+        (1 + marginOuter + (marginInner < 0 ? marginInner : 0))}%;"
     ></div>
+    <!-- {#if isOn === 'top'}
+      <div
+        class="w-full b-cyan"
+        style="padding-top: {paddifiedHeight * (1 + marginOuter)}%;"
+      ></div>
+    {/if} -->
   </div>
 {:else}
   <div

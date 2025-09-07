@@ -32,13 +32,9 @@
     </div>
   {/if}
 
-  {#if C.config.separators[0] && C.config.separators[0].reverse}
-    <div
-      class={cx('absolute bottom-0 w-full', {
-        'text-main-500': true,
-      })}
-    >
-      <Separator config={C.config.separators[0]} />
+  {#if C.config.separators[0] && C.config.separators[0].snapTo === 'next'}
+    <div class={'absolute bottom-0 w-full'}>
+      <Separator index={0} config={C.config.separators[0]} />
     </div>
   {/if}
 </div>

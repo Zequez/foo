@@ -51,10 +51,7 @@ export default defineConfig({
       title: 'Servicios',
       id: 'servicios',
       showOnNavigation: true,
-      separator: {
-        id: 'bubbles',
-        reverse: true,
-      },
+      separator: null,
       components: [{ type: 'Markdown', content: 'Los servicios!' }],
     },
     {

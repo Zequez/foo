@@ -43,10 +43,10 @@ export type SectionComponent = TeamConfig | MarkdownConfig
 
 export type SeparatorConfig = {
   id: string
-  reverse?: boolean
-  dragInOffset?: number
-  cavityOffset?: number
   flip?: boolean
+  snapTo: 'prev' | 'next'
+  marginInner?: number
+  marginOuter?: number
   viewboxShift?: [number, number, number, number]
 } | null
 
